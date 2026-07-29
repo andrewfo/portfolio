@@ -1,51 +1,36 @@
+@import '@fontsource/playfair-display/400.css';
+@import '@fontsource/playfair-display/500.css';
+@import '@fontsource/playfair-display/600.css';
+@import '@fontsource/playfair-display/700.css';
+@import '@fontsource/playfair-display/400-italic.css';
+@import '@fontsource/playfair-display/500-italic.css';
+@import '@fontsource/playfair-display/600-italic.css';
+@import '@fontsource/playfair-display/700-italic.css';
 @import '@fontsource/inter/400.css';
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
-@import '@fontsource/inter/800.css';
-@import '@fontsource/inter/900.css';
 
+/* ---------------------------------------------------------------------------
+   Palette system
+   Blue Dianne is the ground everything sits on; warm tones (Crusta, Bright
+   Sun) carry emphasis and interaction; the greens (Olivine, Patina) support —
+   metadata, borders, quiet accents. Ink colors are warm off-whites tuned for
+   WCAG AA on Blue Dianne.
+--------------------------------------------------------------------------- */
 :root {
-  --black: #0a0a0a;
-  --white: #ffffff;
-  --red: #e63946;
-  --red-dark: #c1121f;
-  --gray-100: #f5f5f5;
-  --gray-200: #e5e5e5;
-  --gray-300: #d4d4d4;
-  --gray-400: #a3a3a3;
-  --gray-500: #737373;
-  --gray-600: #525252;
-  --gray-700: #404040;
-  --gray-800: #262626;
-  --gray-900: #171717;
+  --blue-dianne: #233C4B;   /* dominant background */
+  --blue-dianne-deep: #1C323F; /* faint tonal shift for separation */
+  --crusta: #FF7D2D;        /* primary accent / CTAs */
+  --bright-sun: #FAC846;    /* secondary accent / highlights */
+  --olivine: #A0C382;       /* tertiary / soft accents */
+  --patina: #5F9B8C;        /* muted accent / borders (large text only) */
 
-  /* ---- Liquid Glass material tokens (web translation of .glassEffect) ---- */
-  /* Clear, translucent fill — most of the look comes from refraction + edges */
-  --glass-fill: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.035) 42%, rgba(255, 255, 255, 0.02) 60%, rgba(255, 255, 255, 0.06) 100%);
-  --glass-fill-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.09) 100%);
-  /* Tinted (red) glass — analog of .glassEffect(.regular.tint(.red)) */
-  --glass-tint: linear-gradient(135deg, rgba(230, 57, 70, 0.90) 0%, rgba(200, 30, 45, 0.80) 100%);
-  --glass-tint-quiet: linear-gradient(135deg, rgba(230, 57, 70, 0.16) 0%, rgba(230, 57, 70, 0.05) 100%);
+  --ink: #F4F1E8;           /* body text — 9.4:1 on Blue Dianne */
+  --ink-muted: #C2CCC3;     /* secondary text — 5.9:1 on Blue Dianne */
+  --hairline: rgba(95, 155, 140, 0.28); /* patina at whisper strength */
 
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-border-strong: rgba(255, 255, 255, 0.28);
-  --glass-edge: rgba(255, 255, 255, 0.45); /* specular edge highlight */
-  /* Stronger frost + saturation = more visible refraction through the glass */
-  --glass-blur: blur(30px) saturate(200%);
-  --glass-blur-strong: blur(46px) saturate(210%);
-
-  /* Elevation shadow + inner edge-lensing (bright top rim, faint bottom rim) */
-  --glass-shadow: 0 10px 34px rgba(0, 0, 0, 0.42), 0 2px 8px rgba(0, 0, 0, 0.28);
-  --glass-shadow-lift: 0 22px 60px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.32);
-  --glass-inner: inset 0 1px 1px rgba(255, 255, 255, 0.38), inset 0 -1px 1px rgba(255, 255, 255, 0.10), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-  /* A whisper of warmth on lift — not a neon bloom */
-  --glow-red: 0 6px 22px rgba(230, 57, 70, 0.12);
-
-  --radius-sm: 16px;
-  --radius-md: 22px;
-  --radius-lg: 30px;
-  --radius-pill: 100px;
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 * {
@@ -59,132 +44,25 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--black);
-  color: var(--white);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  background-color: var(--blue-dianne);
+  color: var(--ink);
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
-/* ---- Ambient backdrop ----
-   Glass needs light behind it to refract. This is deliberately restrained: a
-   near-neutral wash with a single faint warm corner — enough depth for the
-   glass to read as glass, without painting the page in gradients. */
-.ambient {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(60% 55% at 82% 0%, rgba(230, 57, 70, 0.055) 0%, transparent 62%),
-    radial-gradient(55% 50% at 0% 100%, rgba(255, 255, 255, 0.022) 0%, transparent 60%);
-}
-
-/* Keep app content above the ambient layer */
-.app {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---- Glass material utilities (web analog of SwiftUI .glassEffect) ----
-   .glass        → standard chrome material (cards, panels, sidebars)
-   .glass-strong → heavier blur for floating chrome (nav, toast, menu)
-   Use on CHROME + CONTROLS only — never on plain content/text surfaces. */
-.glass,
-.glass-strong {
-  position: relative;
-  background-color: rgba(255, 255, 255, 0.02);
-  background-image: var(--glass-fill);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), var(--glass-inner);
-}
-
-.glass-strong {
-  background-image: var(--glass-fill-strong);
-  -webkit-backdrop-filter: var(--glass-blur-strong);
-  backdrop-filter: var(--glass-blur-strong);
-}
-
-/* Specular edge-lensing drawn as a hairline rim around any glass surface.
-   Bright at the top-left where light enters, a second bright arc bottom-right
-   where it refracts out — the signature liquid-glass edge. */
-.glass::before,
-.glass-strong::before,
-.stat-card::before,
-.project-featured::before,
-.project-card::before,
-.skill-category::before,
-.award-card::before,
-.leadership-card::before,
-.education-card::before,
-.contact-email::before,
-.social-link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.06) 30%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.08) 78%, rgba(255, 255, 255, 0.32) 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Reduced Transparency: drop the specular rim along with the blur */
-@media (prefers-reduced-transparency: reduce) {
-  .stat-card::before,
-  .project-featured::before,
-  .project-card::before,
-  .skill-category::before,
-  .award-card::before,
-  .leadership-card::before,
-  .education-card::before,
-  .contact-email::before,
-  .social-link::before { display: none; }
-}
-
-/* ---- Fallbacks ----
-   1) Browsers without backdrop-filter support: use an opaque, palette-matched
-      panel so chrome never turns into illegible transparent glass.
-   2) Users with Reduce Transparency on: same opaque treatment, honoring intent. */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .glass,
-  .glass-strong {
-    background-image: none;
-    background-color: var(--gray-800);
-    border-color: var(--gray-700);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .ambient { display: none; }
-  .glass,
-  .glass-strong {
-    background-image: none !important;
-    background-color: var(--gray-800) !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    border-color: var(--gray-700) !important;
-  }
-  .glass::before,
-  .glass-strong::before { display: none; }
-}
-
-/* Honor reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  * { scroll-behavior: auto; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 ::selection {
-  background-color: var(--red);
-  color: var(--white);
+  background-color: var(--crusta);
+  color: var(--blue-dianne);
 }
 
 ::-webkit-scrollbar {
@@ -192,16 +70,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--black);
+  background: var(--blue-dianne-deep);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gray-700);
+  background: var(--patina);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--red);
+  background: var(--crusta);
 }
 
 a {
@@ -214,6 +92,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+  color: inherit;
 }
 
 img, video {
@@ -223,4 +102,10 @@ img, video {
 
 ul {
   list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--bright-sun);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
