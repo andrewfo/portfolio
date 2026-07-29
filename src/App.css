@@ -128,6 +128,45 @@
 /* ---------------------------------------------------------------------------
    About / hero
 --------------------------------------------------------------------------- */
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.hero-text {
+  min-width: 0;
+}
+
+.hero-portrait {
+  flex-shrink: 0;
+  margin-top: 3.2rem;
+}
+
+.hero-portrait img {
+  width: clamp(180px, 22vw, 260px);
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  display: block;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .hero-portrait {
+    margin-top: 0;
+    order: -1;
+  }
+
+  .hero-portrait img {
+    width: 180px;
+  }
+}
+
 .hero-label {
   display: flex;
   align-items: center;

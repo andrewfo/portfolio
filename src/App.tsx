@@ -432,29 +432,37 @@ function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void;
 
   return (
     <motion.div variants={stagger} initial="hidden" animate="visible">
-      <motion.p className="hero-label" variants={item}>
-        <span className="dot" aria-hidden="true" />
-        Available for opportunities
-      </motion.p>
+      <div className="hero">
+        <div className="hero-text">
+          <motion.p className="hero-label" variants={item}>
+            <span className="dot" aria-hidden="true" />
+            Available for opportunities
+          </motion.p>
 
-      <motion.h1 className="hero-title" variants={item}>
-        Crafting intelligent systems
-        <br />
-        <em>that work in the real world.</em>
-      </motion.h1>
+          <motion.h1 className="hero-title" variants={item}>
+            Crafting intelligent systems
+            <br />
+            <em>that work in the real world.</em>
+          </motion.h1>
 
-      <motion.p className="hero-lede" variants={item}>
-        I'm Andrew Ma, a CS student at <strong>UT Austin</strong> building autonomous systems,
-        multi-agent AI, and the research behind them. I work across the full stack of intelligent
-        systems — from the autonomy software that lets a fleet of race cars cooperate at speed, to
-        the ML research behind detecting AI-generated media, to the backends that keep multi-agent
-        applications in sync.
-      </motion.p>
+          <motion.p className="hero-lede" variants={item}>
+            I'm Andrew Ma, a CS student at <strong>UT Austin</strong> building autonomous systems,
+            multi-agent AI, and the research behind them. I work across the full stack of intelligent
+            systems — from the autonomy software that lets a fleet of race cars cooperate at speed, to
+            the ML research behind detecting AI-generated media, to the backends that keep multi-agent
+            applications in sync.
+          </motion.p>
 
-      <motion.div className="hero-actions" variants={item}>
-        <button className="button primary" onClick={onViewProjects}>View Projects</button>
-        <button className="button ghost" onClick={onContact}>Contact Me</button>
-      </motion.div>
+          <motion.div className="hero-actions" variants={item}>
+            <button className="button primary" onClick={onViewProjects}>View Projects</button>
+            <button className="button ghost" onClick={onContact}>Contact Me</button>
+          </motion.div>
+        </div>
+
+        <motion.figure className="hero-portrait" variants={item}>
+          <img src="/assets/andrew.png" alt="Andrew Ma" />
+        </motion.figure>
+      </div>
 
       <motion.dl className="stats" variants={item}>
         <div className="stat">
