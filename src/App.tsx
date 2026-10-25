@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform
+} from 'framer-motion'
 import type { Variants } from 'framer-motion'
 import { Mail, Github, Linkedin, Globe, ExternalLink, Copy } from 'lucide-react'
 import './App.css'
@@ -12,15 +21,15 @@ import './App.css'
 // than the resume bullets.
 const experiences = [
   {
-    title: "Software Contractor",
-    company: "BizPro Software (LLC)",
-    meta: "Clients: Allied IT Systems",
-    location: "Beaumont, TX",
+    title: "Software Engineering Contractor",
+    company: "Allied IT Systems",
+    meta: "Contract",
+    location: "Remote",
     date: "Jul 2026 – Present",
     description: [
-      "Building a React, TypeScript, and .NET asset-management portal that manages 5,000+ endpoints across 60+ client sites from a single console.",
-      "Engineered a Redis-queued webhook integration into PSA/RMM ticketing, processing 1,200 events per minute at sub-90ms p99 latency.",
-      "Cut the API error rate 85% (2.1% → 0.3%) through SQL Server query indexing and 88% backend test coverage."
+      "Built an MQTT-driven ingestion service that streams Link Labs telemetry into a Dataverse data model, handling 50k+ events a day.",
+      "Designed a truck cargo tracking and visualization system on TypeScript, the Dataverse API, and event-triggered Azure Functions, so cargo state updates the moment a device reports in.",
+      "Assembled spatial trajectory analytics over vehicle paths that pinpoint congestion hotspots, cutting average dwell time by 20%."
     ]
   },
   {
@@ -30,9 +39,9 @@ const experiences = [
     location: "Port Arthur, TX",
     date: "May 2026 – Jul 2026",
     description: [
-      "Fused 6 live AIS telemetry streams into a single PostGIS-backed spatial state refreshed at sub-second cadence, so operators can watch 40+ vessels move across the port in real time.",
-      "Designed a conflict-safe berth-reservation schema with database-level (btree_gist) exclusion constraints that make double-booking physically impossible — eliminating berth conflicts across 100+ concurrent reservations.",
-      "Built a coordinate-crosswalk layer that reconciles 3 independent sensor frames through affine transforms, achieving sub-meter georeferencing so radar, AIS, and camera data all line up on one map — turning raw vessel streams into predictive maritime analytics."
+      "Designed an async FastAPI ingestion pipeline that streams AIS, camera, and environmental sensor data into a single GIS console for port operators.",
+      "Created a PostGIS scheduling engine that enforces conflict detection and safety checks across 5k+ ship reservations, catching double-bookings at the database level.",
+      "Built an LLM agent that uses the reservation operations as MCP tools, letting it create, edit, and cancel dockings on its own."
     ],
     image: "/assets/port-arthur.png",
     imageCaption: "POPA Wharf ops console — live AIS vessel tracking, berth reservations, and dredge-survey depth overlay."
@@ -44,57 +53,33 @@ const experiences = [
     location: "Austin, TX",
     date: "Jan 2026 – Present",
     description: [
-      "Architecting a multi-agent vehicle-to-vehicle (V2V) framework in which 1/10-scale race cars broadcast shared occupancy costmaps to one another at sub-100ms latency, so the fleet can cooperatively overtake and avoid collisions on a shared track.",
-      "Cut localization uncertainty by 17% by reframing multi-sensor fusion as a Joint Entropy Reduction problem — actively selecting the measurements that add the most information instead of weighting every sensor equally.",
-      "Trained neural driving policies on 50K+ logged frames with imitation and reinforcement learning, then deployed quantized inference on NVIDIA Jetson Orin for closed-loop runs on the physical track."
-    ]
-  },
-  {
-    title: "Chief Technology Officer & Founder",
-    company: "GhostHive",
-    meta: "Remote",
-    location: "Remote",
-    date: "Jan 2026 – Present",
-    description: [
-      "Founded and built GhostHive.net, a decentralized AI economy where 100+ autonomous agents negotiate and settle real transactions on-chain, moving $2,000+ in Solana value.",
-      "Engineered the full backend — Node.js + PostgreSQL with Knex.js migrations and Socket.io — so every agent shares a consistent, real-time view of the world as state changes propagate.",
-      "Drove the MVP go-to-market solo, landing a 100+ person waitlist and 3,500+ LinkedIn impressions before the product even launched."
+      "Architected a multi-agent vehicle-to-vehicle (V2V) framework in which race cars broadcast shared costmaps across the fleet at sub-100ms latency, so each car plans with what the others see.",
+      "Cut localization uncertainty in pose estimates by driving sensor selection with Joint Entropy Reduction, picking the measurements that add the most information instead of weighting every sensor equally.",
+      "Trained imitation- and reinforcement-learning driving policies on 100K+ frames, then deployed inference on Jetson Orin and ROS2 for live track trials."
     ]
   },
   {
     title: "Associate Researcher · SALT Lab",
     company: "The University of Texas at Austin",
-    meta: "Advised by Dr. David Harwath & Yuan Tseng",
+    meta: "Advised by Dr. David Harwath & PhD student Yuan Tseng",
     location: "Austin, TX",
     date: "Oct 2025 – May 2026",
     description: [
-      "Co-authored a paper published at the IEEE Spoken Language Technology Workshop (SLT 2026) on detecting AI-generated speech and text.",
-      "Built a deepfake-detection pipeline that spans both audio and text and holds 85% accuracy across 6 public benchmarks and 10K+ samples — not just one dataset it was tuned on.",
-      "Designed BERT + few-shot transformer ensembles wrapped in an adversarial refinement loop that hunts for the subtle statistical fingerprints synthetic generators leave behind, lifting robustness scores by 35%."
+      "Co-authored a deepfake-detection paper accepted to the IEEE Spoken Language Technology Workshop (SLT 2026).",
+      "Built the audio + text deepfake-detection pipeline behind that paper, evaluated across 6 benchmarks and 10K+ samples.",
+      "Engineered BERT + few-shot transformer ensembles with an adversarial refinement loop so the detector holds up under distribution shift, not just on the data it was tuned on."
     ]
   },
   {
-    title: "Research Intern · NLP & Software Engineering",
+    title: "Research Intern",
     company: "Lamar University",
-    meta: "Advised by Dr. Rakibul Islam",
+    meta: "Advised by Dr. Rakibul Islam & Dr. Stephan Andrei",
     location: "Beaumont, TX",
     date: "Feb 2025 – Aug 2025",
     description: [
-      "Co-led a study that classified 1,000+ real-world software requirements with LLMs and transformer models; the work was peer-reviewed and published in IEEE Access (2025).",
-      "Ran a head-to-head of zero-shot vs. few-shot prompting across 5 downstream tasks, reaching 94% F1 on multi-class non-functional-requirement and security classification — concrete evidence that a handful of well-chosen examples beats zero-shot at this scale.",
-      "Wrote reusable prompt templates and an evaluation harness so every result reproduces cleanly across 3 different model families instead of being tied to one vendor's API."
-    ]
-  },
-  {
-    title: "Machine Learning Engineering Apprentice",
-    company: "Lamar University",
-    meta: "Advised by Dr. Stephan Andrei",
-    location: "Beaumont, TX",
-    date: "Feb 2025 – Aug 2025",
-    description: [
-      "Fine-tuned ResNet-50 and DenseNet architectures on 5,000+ CT and MRI scans for stroke detection, pushing accuracy to 94.2% — an 18-point jump over the project's original baseline.",
-      "Built an OpenCV preprocessing pipeline that normalized 10GB+ of raw DICOM imaging from different scanner sources, standardizing contrast and orientation so the models stopped over-fitting to hardware artifacts and false negatives dropped.",
-      "Added a Grad-CAM visualization layer that overlays each prediction's attention map onto the scan, giving radiologists an interpretable, second-opinion view rather than an opaque score."
+      "Co-led an LLM and transformer study classifying 1,000+ software requirements; the work was peer-reviewed and published in IEEE Access (2025).",
+      "Benchmarked zero-shot vs. few-shot prompting across 5 non-functional-requirement and security classification tasks to establish the paper's baselines.",
+      "Fine-tuned ResNet-50 and DenseNet on 5,000+ CT and MRI scans (10GB+ of DICOM), adding a Grad-CAM layer that overlays each prediction's attention map on the scan."
     ]
   }
 ]
@@ -136,8 +121,8 @@ const projects: Project[] = [
   },
   {
     title: "WakeUp",
-    subtitle: "Maritime Vessel Spoofing Detection",
-    description: "A detection system for spoofed ship-tracking signals. Built a data generator that simulates 5 distinct types of spoofing attacks on AIS streams, then engineered a Transformer model that flags the subtle ones — raising detection accuracy from 64% to 97% over baselines — with an evaluation harness scoring precision and false-alarm rates across 4 competing models.",
+    subtitle: "Maritime Vessel Anomaly Detection",
+    description: "A detection system for spoofed ship-tracking signals. Built a data generator that simulates 5 types of spoofing attacks on AIS streams to benchmark detection models, then engineered a Transformer detector that flags the subtle faking patterns baseline models miss, with an evaluation harness scoring precision and false-alarm rates across 4 competing models.",
     tags: ["Python", "PyTorch", "PyTorch Geometric", "scikit-learn", "PostGIS"],
     period: "2026"
   },
@@ -150,8 +135,10 @@ const projects: Project[] = [
   },
   {
     title: "GhostHive.net",
-    description: "A decentralized AI economy where 100+ autonomous agents discover, negotiate, and settle real transactions on-chain — moving $2,000+ in Solana value through a Solana-backed settlement currency with escrow. Built on a Node.js + PostgreSQL backend with Knex.js migrations and Socket.io for real-time multi-agent state sync.",
+    subtitle: "Decentralized AI Agent Platform",
+    description: "A marketplace where autonomous agents discover, negotiate, and transact tasks, with state kept in sync over Socket.io. A Solana-backed digital currency is the settlement layer, so agents pay each other on-chain for completed work, and a Node.js + PostgreSQL backend with Knex.js coordinates agent actions and on-chain escrow.",
     tags: ["Solana", "Node.js", "PostgreSQL", "Knex.js", "Socket.io"],
+    period: "2026",
     link: "https://ghosthive.net",
     image: "/assets/ghosthive.png"
   },
@@ -183,11 +170,11 @@ const projects: Project[] = [
 ]
 
 const skills = [
-  { title: "Languages", items: ["Python", "Java", "C/C++", "C#", "JavaScript/TypeScript", "SQL", "Bash", "Rust", "Go"] },
-  { title: "ML / AI", items: ["PyTorch", "TensorFlow", "Transformers", "LLMs", "NLP", "RAG", "LangChain", "LangGraph", "CrewAI", "OpenCV", "scikit-learn"] },
-  { title: "Robotics & Systems", items: ["ROS2", "Nav2", "Gazebo", "MPPI", "SLAM", "Jetson Orin", "CUDA", "IL/RL", "gRPC", "Linux"] },
-  { title: "Backend & Data", items: ["Node.js", "FastAPI", "Flask", "PostgreSQL", "PostGIS", "SQL Server", "Redis", "SQLite", "GraphQL", "REST", "WebSockets", "Knex.js"] },
-  { title: "Cloud & DevOps", items: ["AWS (EC2, S3, Lambda, RDS)", "GCP", "Docker", "Kubernetes", "Terraform", "CI/CD (GitHub Actions)", "Nginx", "Solana"] }
+  { title: "Languages", items: ["Python", "Java", "C++", "JavaScript", "TypeScript", "React", "SQL", "Bash", "Rust"] },
+  { title: "ML / AI", items: ["PyTorch", "TensorFlow", "Transformers", "LLMs", "RAG", "LangChain", "scikit-learn", "NLP", "NumPy", "Pandas"] },
+  { title: "Robotics & Systems", items: ["ROS2", "Nav2", "Gazebo", "MPPI", "SLAM", "Jetson Orin", "IL/RL", "MQTT", "Linux"] },
+  { title: "Backend & Data", items: ["Node.js", "FastAPI", "PostgreSQL", "PostGIS", "Redis", "Knex.js", "GraphQL", "OData", "WebSockets", "Kafka", "pytest", "gRPC"] },
+  { title: "Cloud & DevOps", items: ["AWS (EC2, S3, Lambda, RDS)", "Azure (Functions, Power Platform)", "Docker", "CI/CD (GitHub Actions)", "Nginx"] }
 ]
 
 const awards = [
@@ -240,7 +227,7 @@ const publications = [
   {
     venue: "IEEE SLT 2026",
     role: "Co-Author",
-    description: "Published at the IEEE Spoken Language Technology Workshop — detecting AI-generated speech and text across audio and text modalities."
+    description: "Accepted to the IEEE Spoken Language Technology Workshop — detecting AI-generated speech and text across audio and text modalities."
   },
   {
     venue: "IEEE Access 2025",
@@ -424,58 +411,319 @@ function App() {
 }
 
 // ---------------------------------------------------------------------------
+// Hero
+// ---------------------------------------------------------------------------
+
+// Each verb maps to a project: RoboRacer, GhostHive, Polymarket bot,
+// the SALT Lab deepfake work, PeachViz.
+const HERO_VERBS = ['drive.', 'negotiate.', 'trade.', 'listen.', 'see.']
+
+const charSpring = { type: 'spring', stiffness: 320, damping: 22 } as const
+
+const charIn: Variants = {
+  hidden: { opacity: 0, y: '0.55em', rotateX: -85, filter: 'blur(10px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    rotateX: 0,
+    filter: 'blur(0px)',
+    transition: { ...charSpring, opacity: { duration: 0.35 }, filter: { duration: 0.5 } }
+  }
+}
+
+function SplitChars({ text, delay = 0 }: { text: string; delay?: number }) {
+  return (
+    <motion.span
+      aria-hidden="true"
+      initial="hidden"
+      animate="visible"
+      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.035, delayChildren: delay } } }}
+    >
+      {text.split(' ').map((word, wi) => (
+        <span key={wi}>
+          {wi > 0 && ' '}
+          <span className="split-word">
+            {[...word].map((ch, ci) => (
+              <motion.span className="split-char" key={ci} variants={charIn}>{ch}</motion.span>
+            ))}
+          </span>
+        </span>
+      ))}
+    </motion.span>
+  )
+}
+
+function RotatingWord({ words, delay }: { words: string[]; delay: number }) {
+  // Counts every swap, so cycle 0 is the intro and gets the long delay.
+  const [cycle, setCycle] = useState(0)
+
+  useEffect(() => {
+    let interval: number | undefined
+    const start = window.setTimeout(() => {
+      interval = window.setInterval(() => setCycle(c => c + 1), 2600)
+    }, delay * 1000 + 1200)
+    return () => {
+      window.clearTimeout(start)
+      window.clearInterval(interval)
+    }
+  }, [delay])
+
+  const word = words[cycle % words.length]
+  const isIntro = cycle === 0
+
+  return (
+    <motion.span className="rotator" aria-hidden="true" layout transition={{ layout: { type: 'spring', stiffness: 260, damping: 30 } }}>
+      <AnimatePresence mode="popLayout">
+        <motion.em
+          key={word}
+          className="rotator-word"
+          initial="enter"
+          animate="center"
+          exit="exit"
+          variants={{
+            enter: {},
+            center: { transition: { staggerChildren: 0.04, delayChildren: isIntro ? delay : 0.1 } },
+            exit: { transition: { staggerChildren: 0.025 } }
+          }}
+        >
+          {[...word].map((ch, i) => (
+            <motion.span
+              className="split-char"
+              key={i}
+              variants={{
+                enter: { opacity: 0, y: '0.7em', rotateX: -90, filter: 'blur(8px)' },
+                center: { opacity: 1, y: 0, rotateX: 0, filter: 'blur(0px)', transition: { ...charSpring, filter: { duration: 0.4 } } },
+                exit: { opacity: 0, y: '-0.6em', rotateX: 90, filter: 'blur(8px)', transition: { duration: 0.28, ease: 'easeIn' } }
+              }}
+            >
+              {ch}
+            </motion.span>
+          ))}
+        </motion.em>
+      </AnimatePresence>
+      <motion.span
+        key={`underline-${word}`}
+        className="rotator-underline"
+        initial={{ scaleX: 0, originX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.7, ease: easeOut, delay: isIntro ? delay + 0.3 : 0.35 }}
+      />
+    </motion.span>
+  )
+}
+
+const SCRAMBLE_GLYPHS = '!<>-_\\/[]{}=+*^?#01'
+
+// Decodes the text one character at a time out of random glyphs.
+function ScrambleText({ text, delay = 0 }: { text: string; delay?: number }) {
+  const [output, setOutput] = useState('')
+
+  useEffect(() => {
+    let tick = 0
+    let interval: number | undefined
+    const start = window.setTimeout(() => {
+      interval = window.setInterval(() => {
+        tick++
+        const revealed = Math.floor(tick / 2)
+        const visible = Math.min(text.length, tick + 3)
+        setOutput(
+          [...text.slice(0, visible)]
+            .map((c, i) => (i < revealed || c === ' ' ? c : SCRAMBLE_GLYPHS[Math.floor(Math.random() * SCRAMBLE_GLYPHS.length)]))
+            .join('')
+        )
+        if (revealed >= text.length) window.clearInterval(interval)
+      }, 28)
+    }, delay * 1000)
+    return () => {
+      window.clearTimeout(start)
+      window.clearInterval(interval)
+    }
+  }, [text, delay])
+
+  return <span aria-hidden="true">{output}</span>
+}
+
+// Wraps a child so it leans toward the cursor and springs back on leave.
+function Magnetic({ children }: { children: React.ReactNode }) {
+  const reduced = useReducedMotion()
+  const x = useSpring(0, { stiffness: 220, damping: 14, mass: 0.5 })
+  const y = useSpring(0, { stiffness: 220, damping: 14, mass: 0.5 })
+
+  const onPointerMove = (e: React.PointerEvent<HTMLSpanElement>) => {
+    if (reduced || e.pointerType !== 'mouse') return
+    const rect = e.currentTarget.getBoundingClientRect()
+    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.35)
+    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.45)
+  }
+
+  const reset = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  return (
+    <span className="magnetic" onPointerMove={onPointerMove} onPointerLeave={reset}>
+      <motion.span className="magnetic-inner" style={{ x, y }}>{children}</motion.span>
+    </span>
+  )
+}
+
+function Portrait() {
+  const reduced = useReducedMotion()
+  const px = useMotionValue(0.5)
+  const py = useMotionValue(0.5)
+  const tiltSpring = { stiffness: 180, damping: 18 }
+  const rotateY = useSpring(useTransform(px, [0, 1], [-14, 14]), tiltSpring)
+  const rotateX = useSpring(useTransform(py, [0, 1], [12, -12]), tiltSpring)
+  const shineX = useTransform(px, v => `${v * 100}%`)
+  const shineY = useTransform(py, v => `${v * 100}%`)
+  const shine = useMotionTemplate`radial-gradient(circle at ${shineX} ${shineY}, rgba(250, 200, 70, 0.28), transparent 55%)`
+
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reduced) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    px.set((e.clientX - rect.left) / rect.width)
+    py.set((e.clientY - rect.top) / rect.height)
+  }
+
+  const reset = () => {
+    px.set(0.5)
+    py.set(0.5)
+  }
+
+  return (
+    <figure className="hero-portrait" onPointerMove={onPointerMove} onPointerLeave={reset}>
+      <motion.div
+        className="hero-portrait-card"
+        style={{ rotateX, rotateY }}
+        initial={reduced ? false : { y: 40, rotate: 4 }}
+        animate={{ y: 0, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 90, damping: 14, delay: 0.25 }}
+      >
+        <motion.div
+          className="hero-portrait-clip"
+          initial={reduced ? false : { clipPath: 'inset(100% 0% 0% 0% round 18px)' }}
+          animate={{ clipPath: 'inset(0% 0% 0% 0% round 18px)' }}
+          transition={{ duration: 1.1, ease: [0.76, 0, 0.24, 1], delay: 0.25 }}
+        >
+          <motion.img
+            src="/assets/andrew.png"
+            alt="Andrew Ma"
+            initial={reduced ? false : { scale: 1.4 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1.6, ease: easeOut, delay: 0.25 }}
+          />
+          <motion.span className="hero-portrait-shine" style={{ background: shine }} aria-hidden="true" />
+        </motion.div>
+      </motion.div>
+    </figure>
+  )
+}
+
+function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onContact: () => void }) {
+  const reduced = useReducedMotion()
+  const glowX = useSpring(220, { stiffness: 60, damping: 20 })
+  const glowY = useSpring(160, { stiffness: 60, damping: 20 })
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (reduced || e.pointerType !== 'mouse') return
+    const rect = e.currentTarget.getBoundingClientRect()
+    glowX.set(e.clientX - rect.left)
+    glowY.set(e.clientY - rect.top)
+  }
+
+  const fadeUp = (delay: number) =>
+    reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 24, filter: 'blur(6px)' },
+          animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          transition: { duration: 0.7, ease: easeOut, delay }
+        }
+
+  return (
+    <div className="hero" onPointerMove={onPointerMove}>
+      {!reduced && (
+        <div className="hero-glow-layer" aria-hidden="true">
+          <motion.div className="hero-glow" style={{ x: glowX, y: glowY }} />
+        </div>
+      )}
+
+      <div className="hero-text">
+        <motion.p className="hero-label" aria-label="Available for opportunities" {...fadeUp(0)}>
+          <span className="dot" aria-hidden="true" />
+          {reduced ? 'Available for opportunities' : <ScrambleText text="Available for opportunities" delay={0.1} />}
+        </motion.p>
+
+        <h1 className="hero-title" aria-label="I build machines that drive, negotiate, trade, listen, and see.">
+          {reduced ? (
+            <span aria-hidden="true">I build machines<br />that <em>drive.</em></span>
+          ) : (
+            <>
+              <SplitChars text="I build machines" delay={0.15} />
+              <br />
+              <SplitChars text="that" delay={0.75} />{' '}
+              <RotatingWord words={HERO_VERBS} delay={0.95} />
+            </>
+          )}
+        </h1>
+
+        <motion.p className="hero-lede" {...fadeUp(1.25)}>
+          CS at <strong>UT Austin</strong>. Robots, agents, research.
+        </motion.p>
+
+        <motion.div className="hero-actions" {...fadeUp(1.45)}>
+          <Magnetic>
+            <button className="button primary" onClick={onViewProjects}>View Projects</button>
+          </Magnetic>
+          <Magnetic>
+            <button className="button ghost" onClick={onContact}>Contact Me</button>
+          </Magnetic>
+        </motion.div>
+      </div>
+
+      <Portrait />
+    </div>
+  )
+}
+
+function CountUp({ to, decimals = 0, suffix = '', delay = 0 }: { to: number; decimals?: number; suffix?: string; delay?: number }) {
+  const reduced = useReducedMotion()
+  const value = useMotionValue(reduced ? to : 0)
+  const text = useTransform(value, v => `${v.toFixed(decimals)}${suffix}`)
+
+  useEffect(() => {
+    if (reduced) return
+    const controls = animate(value, to, { duration: 1.4, ease: easeOut, delay })
+    return () => controls.stop()
+  }, [reduced, value, to, delay])
+
+  return <motion.span>{text}</motion.span>
+}
+
+// ---------------------------------------------------------------------------
 // Panels
 // ---------------------------------------------------------------------------
 
 function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void; onContact: () => void }) {
-  const { stagger, item } = usePanelVariants()
+  const { stagger, item, reduced } = usePanelVariants()
+  // Everything below the hero waits for the hero's intro to finish.
+  const afterHero: Variants = reduced
+    ? stagger
+    : { hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 1.7 } } }
 
   return (
-    <motion.div variants={stagger} initial="hidden" animate="visible">
-      <div className="hero">
-        <div className="hero-text">
-          <motion.p className="hero-label" variants={item}>
-            <span className="dot" aria-hidden="true" />
-            Available for opportunities
-          </motion.p>
-
-          <motion.h1 className="hero-title" variants={item}>
-            Crafting intelligent systems
-            <br />
-            <em>that work in the real world.</em>
-          </motion.h1>
-
-          <motion.p className="hero-lede" variants={item}>
-            I'm Andrew Ma, a CS student at <strong>UT Austin</strong> building autonomous systems,
-            multi-agent AI, and the research behind them. I work across the full stack of intelligent
-            systems — from the autonomy software that lets a fleet of race cars cooperate at speed, to
-            the ML research behind detecting AI-generated media, to the backends that keep multi-agent
-            applications in sync.
-          </motion.p>
-
-          <motion.div className="hero-actions" variants={item}>
-            <button className="button primary" onClick={onViewProjects}>View Projects</button>
-            <button className="button ghost" onClick={onContact}>Contact Me</button>
-          </motion.div>
-        </div>
-
-        <motion.figure className="hero-portrait" variants={item}>
-          <img src="/assets/andrew.png" alt="Andrew Ma" />
-        </motion.figure>
-      </div>
+    <motion.div variants={afterHero} initial="hidden" animate="visible">
+      <Hero onViewProjects={onViewProjects} onContact={onContact} />
 
       <motion.dl className="stats" variants={item}>
         <div className="stat">
           <dt>IEEE Publications</dt>
-          <dd>2</dd>
+          <dd><CountUp to={2} delay={1.8} /></dd>
         </div>
         <div className="stat">
           <dt>Research &amp; Eng Roles</dt>
-          <dd>7+</dd>
-        </div>
-        <div className="stat">
-          <dt>GPA at UT Austin</dt>
-          <dd>3.3</dd>
+          <dd><CountUp to={5} delay={1.9} /></dd>
         </div>
       </motion.dl>
 
@@ -486,7 +734,7 @@ function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void;
             <h3>B.S. Computer Science, <em>The University of Texas at Austin</em></h3>
             <span className="entry-date">Aug 2025 – May 2029 (Expected)</span>
           </div>
-          <p className="entry-meta">GPA 3.3 / 4.0 · Freshman Research Initiative · Autonomous Driving Group · Pi Kappa Alpha Fraternity</p>
+          <p className="entry-meta">GPA 3.34 / 4.0 · Freshman Research Initiative · Autonomous Driving Group · Pi Kappa Alpha Fraternity</p>
           <p className="entry-detail">
             <span className="entry-detail-label">Coursework</span> {coursework.join(' · ')}
           </p>
