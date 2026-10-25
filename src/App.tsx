@@ -622,15 +622,6 @@ function Portrait() {
 
 function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onContact: () => void }) {
   const reduced = useReducedMotion()
-  const glowX = useSpring(220, { stiffness: 60, damping: 20 })
-  const glowY = useSpring(160, { stiffness: 60, damping: 20 })
-
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (reduced || e.pointerType !== 'mouse') return
-    const rect = e.currentTarget.getBoundingClientRect()
-    glowX.set(e.clientX - rect.left)
-    glowY.set(e.clientY - rect.top)
-  }
 
   const fadeUp = (delay: number) =>
     reduced
@@ -642,13 +633,7 @@ function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onCon
         }
 
   return (
-    <div className="hero" onPointerMove={onPointerMove}>
-      {!reduced && (
-        <div className="hero-glow-layer" aria-hidden="true">
-          <motion.div className="hero-glow" style={{ x: glowX, y: glowY }} />
-        </div>
-      )}
-
+    <div className="hero">
       <div className="hero-text">
         <motion.p className="hero-label" aria-label="Available for opportunities" {...fadeUp(0)}>
           <span className="dot" aria-hidden="true" />
@@ -669,7 +654,7 @@ function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onCon
         </h1>
 
         <motion.p className="hero-lede" {...fadeUp(1.25)}>
-          CS at <strong>UT Austin</strong>. Robots, agents, research.
+          CS at <strong>UT Austin</strong>.
         </motion.p>
 
         <motion.div className="hero-actions" {...fadeUp(1.45)}>

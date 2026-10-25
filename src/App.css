@@ -137,27 +137,6 @@
   gap: 3rem;
 }
 
-/* Cursor-following glow. Inset stays inside .main's side padding so it never
-   causes horizontal scroll. */
-.hero-glow-layer {
-  position: absolute;
-  inset: -3rem -1.5rem;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.hero-glow {
-  position: absolute;
-  top: 3rem;
-  left: 1.5rem;
-  width: 520px;
-  height: 520px;
-  margin: -260px 0 0 -260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 125, 45, 0.16), rgba(250, 200, 70, 0.06) 40%, transparent 70%);
-}
-
 .hero-text {
   min-width: 0;
 }
