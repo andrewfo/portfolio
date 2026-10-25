@@ -3,7 +3,6 @@ import {
   AnimatePresence,
   animate,
   motion,
-  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
   useSpring,
@@ -416,7 +415,7 @@ function App() {
 
 // Each verb maps to a project: RoboRacer, GhostHive, Polymarket bot,
 // the SALT Lab deepfake work, PeachViz.
-const HERO_VERBS = ['drive.', 'negotiate.', 'trade.', 'listen.', 'see.']
+const HERO_VERBS = ['drives.', 'negotiates.', 'trades.', 'listens.', 'sees.']
 
 const charSpring = { type: 'spring', stiffness: 320, damping: 22 } as const
 
@@ -569,53 +568,13 @@ function Magnetic({ children }: { children: React.ReactNode }) {
 }
 
 function Portrait() {
-  const reduced = useReducedMotion()
-  const px = useMotionValue(0.5)
-  const py = useMotionValue(0.5)
-  const tiltSpring = { stiffness: 180, damping: 18 }
-  const rotateY = useSpring(useTransform(px, [0, 1], [-14, 14]), tiltSpring)
-  const rotateX = useSpring(useTransform(py, [0, 1], [12, -12]), tiltSpring)
-  const shineX = useTransform(px, v => `${v * 100}%`)
-  const shineY = useTransform(py, v => `${v * 100}%`)
-  const shine = useMotionTemplate`radial-gradient(circle at ${shineX} ${shineY}, rgba(250, 200, 70, 0.28), transparent 55%)`
-
-  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
-    if (reduced) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    px.set((e.clientX - rect.left) / rect.width)
-    py.set((e.clientY - rect.top) / rect.height)
-  }
-
-  const reset = () => {
-    px.set(0.5)
-    py.set(0.5)
-  }
-
   return (
-    <figure className="hero-portrait" onPointerMove={onPointerMove} onPointerLeave={reset}>
-      <motion.div
-        className="hero-portrait-card"
-        style={{ rotateX, rotateY }}
-        initial={reduced ? false : { y: 40, rotate: 4 }}
-        animate={{ y: 0, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 90, damping: 14, delay: 0.25 }}
-      >
-        <motion.div
-          className="hero-portrait-clip"
-          initial={reduced ? false : { clipPath: 'inset(100% 0% 0% 0% round 18px)' }}
-          animate={{ clipPath: 'inset(0% 0% 0% 0% round 18px)' }}
-          transition={{ duration: 1.1, ease: [0.76, 0, 0.24, 1], delay: 0.25 }}
-        >
-          <motion.img
-            src="/assets/andrew.png"
-            alt="Andrew Ma"
-            initial={reduced ? false : { scale: 1.4 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.6, ease: easeOut, delay: 0.25 }}
-          />
-          <motion.span className="hero-portrait-shine" style={{ background: shine }} aria-hidden="true" />
-        </motion.div>
-      </motion.div>
+    <figure className="hero-portrait">
+      <div className="hero-portrait-card">
+        <div className="hero-portrait-clip">
+          <img src="/assets/andrew.png" alt="Andrew Ma" />
+        </div>
+      </div>
     </figure>
   )
 }
@@ -640,12 +599,12 @@ function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onCon
           {reduced ? 'Available for opportunities' : <ScrambleText text="Available for opportunities" delay={0.1} />}
         </motion.p>
 
-        <h1 className="hero-title" aria-label="I build machines that drive, negotiate, trade, listen, and see.">
+        <h1 className="hero-title" aria-label="I build software that drives, negotiates, trades, listens, and sees.">
           {reduced ? (
-            <span aria-hidden="true">I build machines<br />that <em>drive.</em></span>
+            <span aria-hidden="true">I build software<br />that <em>drives.</em></span>
           ) : (
             <>
-              <SplitChars text="I build machines" delay={0.15} />
+              <SplitChars text="I build software" delay={0.15} />
               <br />
               <SplitChars text="that" delay={0.75} />{' '}
               <RotatingWord words={HERO_VERBS} delay={0.95} />
