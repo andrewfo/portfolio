@@ -9,7 +9,7 @@ import {
   useTransform
 } from 'framer-motion'
 import type { Variants } from 'framer-motion'
-import { Mail, Github, Linkedin, Globe, ExternalLink, Copy } from 'lucide-react'
+import { Mail, Github, Linkedin, Globe, ExternalLink, Copy, MapPin } from 'lucide-react'
 import './App.css'
 
 // ---------------------------------------------------------------------------
@@ -417,6 +417,17 @@ function App() {
 // the SALT Lab deepfake work, PeachViz.
 const HERO_VERBS = ['drives.', 'negotiates.', 'trades.', 'listens.', 'sees.']
 
+const HERO_NOW = [
+  { label: 'Now', value: 'SWE Contractor', where: 'Allied IT Systems' },
+  { label: 'Research', value: 'Autonomous Driving Group', where: 'UT Austin' },
+  { label: 'Studying', value: 'B.S. Computer Science', where: 'UT Austin' }
+]
+
+const HERO_STACK = [
+  'ROS2', 'Nav2', 'MPPI', 'PyTorch', 'Jetson Orin', 'FastAPI', 'PostGIS', 'MQTT',
+  'Azure Functions', 'TypeScript', 'React', 'MCP', 'Claude', 'Transformers'
+]
+
 const charSpring = { type: 'spring', stiffness: 320, damping: 22 } as const
 
 const charIn: Variants = {
@@ -575,7 +586,24 @@ function Portrait() {
           <img src="/assets/andrew.png" alt="Andrew Ma" />
         </div>
       </div>
+      <figcaption className="hero-portrait-tag">
+        <MapPin size={14} aria-hidden="true" />
+        Austin, TX
+      </figcaption>
     </figure>
+  )
+}
+
+// Seamless loop: the list renders twice and the track slides by exactly half.
+function StackTicker() {
+  return (
+    <div className="ticker" aria-label={`Stack: ${HERO_STACK.join(', ')}`}>
+      <div className="ticker-track" aria-hidden="true">
+        {[...HERO_STACK, ...HERO_STACK].map((item, i) => (
+          <span className="ticker-item" key={i}>{item}</span>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -612,9 +640,14 @@ function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onCon
           )}
         </h1>
 
-        <motion.p className="hero-lede" {...fadeUp(1.25)}>
-          CS at <strong>UT Austin</strong>.
-        </motion.p>
+        <motion.dl className="hero-now" {...fadeUp(1.25)}>
+          {HERO_NOW.map(row => (
+            <div className="hero-now-row" key={row.label}>
+              <dt>{row.label}</dt>
+              <dd>{row.value} <span>· {row.where}</span></dd>
+            </div>
+          ))}
+        </motion.dl>
 
         <motion.div className="hero-actions" {...fadeUp(1.45)}>
           <Magnetic>
@@ -631,10 +664,10 @@ function Hero({ onViewProjects, onContact }: { onViewProjects: () => void; onCon
   )
 }
 
-function CountUp({ to, decimals = 0, suffix = '', delay = 0 }: { to: number; decimals?: number; suffix?: string; delay?: number }) {
+function CountUp({ to, decimals = 0, prefix = '', suffix = '', delay = 0 }: { to: number; decimals?: number; prefix?: string; suffix?: string; delay?: number }) {
   const reduced = useReducedMotion()
   const value = useMotionValue(reduced ? to : 0)
-  const text = useTransform(value, v => `${v.toFixed(decimals)}${suffix}`)
+  const text = useTransform(value, v => `${prefix}${v.toFixed(decimals)}${suffix}`)
 
   useEffect(() => {
     if (reduced) return
@@ -660,6 +693,10 @@ function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void;
     <motion.div variants={afterHero} initial="hidden" animate="visible">
       <Hero onViewProjects={onViewProjects} onContact={onContact} />
 
+      <motion.div variants={item}>
+        <StackTicker />
+      </motion.div>
+
       <motion.dl className="stats" variants={item}>
         <div className="stat">
           <dt>IEEE Publications</dt>
@@ -668,6 +705,14 @@ function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void;
         <div className="stat">
           <dt>Research &amp; Eng Roles</dt>
           <dd><CountUp to={5} delay={1.9} /></dd>
+        </div>
+        <div className="stat">
+          <dt>V2V Latency</dt>
+          <dd><CountUp to={100} prefix="<" suffix="ms" delay={2.0} /></dd>
+        </div>
+        <div className="stat">
+          <dt>Events / Day</dt>
+          <dd><CountUp to={50} suffix="k+" delay={2.1} /></dd>
         </div>
       </motion.dl>
 
