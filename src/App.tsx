@@ -706,14 +706,6 @@ function AboutPanel({ onViewProjects, onContact }: { onViewProjects: () => void;
           <dt>Research &amp; Eng Roles</dt>
           <dd><CountUp to={5} delay={1.9} /></dd>
         </div>
-        <div className="stat">
-          <dt>V2V Latency</dt>
-          <dd><CountUp to={100} prefix="<" suffix="ms" delay={2.0} /></dd>
-        </div>
-        <div className="stat">
-          <dt>Events / Day</dt>
-          <dd><CountUp to={50} suffix="k+" delay={2.1} /></dd>
-        </div>
       </motion.dl>
 
       <motion.div className="about-education" variants={item}>
